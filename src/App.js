@@ -1,250 +1,150 @@
-import React, { useState } from 'react';
-import { Button, StyleSheet, Text, View, ScrollView, Vibration, Alert, TouchableOpacity, FlatList, Image } from 'react-native';
+import React from 'react';
+import { StatusBar } from 'expo-status-bar';
+import { Button, StyleSheet, Text, View, ScrollView, Vibration, Alert } from 'react-native';
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { LinearGradient } from 'expo-linear-gradient';
 import NfcManager, {NfcTech, Ndef} from 'react-native-nfc-manager';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
 
-const Excel = require('exceljs');
-const workbook = new Excel.Workbook();
-
-workbook.creator = '작성자';
-workbook.lastModifiedBy = '최종 수정자';
-workbook.created = new Date();
-workbook.modified = new Date();
-
-workbook.addWorksheet('Sheet One');
-workbook.addWorksheet('Sheet Two');
-workbook.addWorksheet('Sheet Three');
-
-const sheetOne = workbook.getWorksheet('Sheet One');
-sheetOne.columns = [
-  {header: 'ingredient', key: 'i', width: 40},
-  {header: 'counts', key: 'c', width: 40},
-  {header: 'reactions', key: 'r', width:40},
-]
-const sheetTwo = workbook.getWorksheet('Sheet Two');
-sheetTwo.columns = [
-  {header: 'users', key: 'u', width: 40},
-  {header: 'data', key: 'd', width: 40},
-  {header: 'food', key: 'f', width: 40},
-]
-sheetTwo.addRow(
-  {u: 'user', d:'', f:''},
-)
-sheetTwo.addRow(
-  {u: 'james', d: '새우,새우크래커,팜유', f: '19720154001156'},
-)
-sheetTwo.addRow(
-  {u: 'joe', d:'새우,새우크래커,팜유,오렌지 농축액', f:'19720154001156,오렌지 주스'},
-)
-sheetTwo.addRow(
-  {u: 'jake', d: '새우크래커,새우, 새우맛베이스', f: '19720154001156'},
-)
-sheetTwo.addRow(
-  {u: 'john', d: '보리분말, 우유, 감자전분', f: '칸타타프리미엄라떼, 고래밥'},
-)
-sheetTwo.addRow(
-  {u: 'june', d: '우유, 새우크래커,새우', f: '19720154001156, 칸타타프리미엄라떼'},
-)
-sheetTwo.addRow(
-  {u: 'jane', d: '우유,새우', f: '칸타타프리미엄라떼'}
-)
-
-
-var state = {
-  "egg" : false,
-  "cow" : false,
-  "pig" : false,
-  "chi" : false,
-  "sae" : false,
-  "gae" : false,
-  "squid" : false,
-  "high" : false,
-  "jo" : false,
-  "milk" : false,
-  "nut" : false,
-  "brainnut" : false,
-  "jat" : false,
-  "big" : false,
-  "tomato" : false,
-  "peach" : false,
-  "mil" : false,
-  "memil" : false,
-  "wine" : false
-}
-var a;
-var temp = [];
-function HomeScreen( {navigation} )  {
-  const [foodListNum, setFoodListNum] = useState([]);
-
-  const excel = async (prdnm) => {
-    var xhr = new XMLHttpRequest();
-    var url = 'http://apis.data.go.kr/B553748/CertImgListService/getCertImgListService'; /URL/
-    var queryParams = '?' + encodeURIComponent('serviceKey') + '='+'4Es3IAYWvtEjQloH9aZivTA0FhZMzBQbDRsGvzwvSpWjQfBd%2BGkPTUj7TNeAltYbfnkZd%2BMPvvlwmdYPH%2FC%2BXw%3D%3D'; /Service Key/
-    queryParams += '&' + encodeURIComponent('prdlstReportNo') + '=' + encodeURIComponent(prdnm); //
-    queryParams += '&' + encodeURIComponent('returnType') + '=' + encodeURIComponent('xml'); //
-    queryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1'); //
-    queryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('10'); /**/
-    xhr.open('GET', url + queryParams);
-    xhr.onreadystatechange = function () {
-        if (this.readyState == 4) {
-          var rawmtrl = (this.responseText).split("<rawmtrl>")[1].split("</rawmtrl>")[0].trim();
-          rawmtrl = rawmtrl.replace(/\{[^}]*/g, "").replace(/[}]*/g, "").replace(/\([^)]*/g, "").replace(/[)]*/g, "").replace(/[^a-zA-Zㄱ-힣,]/g, "");
-          rawmtrl = rawmtrl.split(",");
-          rawmtrl.forEach(element => {
-            var temp = 0;
-            sheetOne.eachRow((row) => {
-              if (row.getCell('i').value==element) {
-                row.getCell('c').value += 1
-                temp = 1;
-              }
-            })
-            if (temp==0) {
-              sheetOne.addRow({i:element, c:1, r:0})
-            }
-          });
-        }
-    };
-    xhr.send('');
-    var flist
-    sheetTwo.eachRow((row) => {
-      if (row.getCell('u').value=='user') {
-        flist = row.getCell('d').value.split(',');
-        flist.forEach(element => {
-          sheetTwo.eachRow((row2) => {
-            //console.log(element,prdnm)
-           //console.log(row2.getCell('d').value.split(',').includes(element) , row2.getCell('f').value.split(',').includes(prdnm))
-            if (row2.getCell('d').value.split(',').includes(element) && row2.getCell('f').value.split(',').includes(prdnm)) {
-              a=1
-              return element;
-            }
-          })
-        })
-      }
-    })
-    return 1;
+export default class App extends React.Component {
+  
+  
+  state = {
+    "egg" : false,
+    "cow" : false,
+    "pig" : false,
+    "chi" : false,
+    "sae" : false,
+    "gae" : false,
+    "squid" : false,
+    "high" : false,
+    "jo" : false,
+    "milk" : false,
+    "nut" : false,
+    "brainnut" : false,
+    "jat" : false,
+    "big" : false,
+    "tomato" : false,
+    "peach" : false,
+    "mil" : false,
+    "memil" : false,
+    "wine" : false
   }
-  function sleep(ms) {
-    const wakeUpTime = Date.now() + ms;
-    while (Date.now() < wakeUpTime) {}
+
+  saveItem = async () => {
+    await AsyncStorage.setItem('@app:state',JSON.stringify(this.state));
   }
-  const nfcRead = async () => {
-      Alert.alert("NFC 리딩중...");
+  getItem = async () => {
+    await AsyncStorage.getItem('@app:state').then((state)=> {
+      /*console.log('------')
+      console.log(this.state);
+      console.log(JSON.parse(state))*/
+      let tempObj = Object.assign({}, JSON.parse(state))
+      this.setState(tempObj)
+      console.log(this.state)
+    });
+  }
+  nfcRead = async () => {
+    try {
       await NfcManager.requestTechnology(NfcTech.Ndef);
       const tag = await NfcManager.getTag();
       const parsed = tag.ndefMessage.map(decodeNdefRecord);
+      console.log(parsed[0]);
       
       function decodeNdefRecord(record) {
         return Ndef.text.decodePayload(record.payload);
       }
       var text=parsed[0];
+      console.log('tag: '+ text);
       var list = text.split('/');
       var warn = [];
-      var warn2 =''
-      
       for (var item of list) {
         if (item == "") {
           continue;
         }
         var food = item.split('&')[0];
         var alles = item.split('&')[1].split(', ');
-        var prdnm = item.split('&')[2];
-        temp= temp.concat([[food,prdnm]])
-        a=0
-        excel(prdnm)
-        
-        console.log(a)
-        if (a!=0) {
-          console.log('??')
-          warn2 += '당신과 유사한 사람이 \''+food+'\'에 반응하였어요.','식품 구매에 주의를 요합니다.\n'
-        };
-        
         for (var allergy of alles) {
-          if (allergy=="계란" && state.egg==true) {
+          console.log(allergy);
+          if (allergy=="계란" && this.state.egg==true) {
             warn.push("계란이 "+food+"에서 검출되었어요!")
           }
-          if (allergy=="밀" && state.mil==true) {
+          if (allergy=="밀" && this.state.mil==true) {
             warn.push("밀이 "+food+"에서 검출되었어요!")
           }
-          if (allergy=="우유" && state.milk==true) {
+          if (allergy=="우유" && this.state.milk==true) {
             warn.push("우유가 "+food+"에서 검출되었어요!")
           }
-          if (allergy=="닭고기" && state.chi==true) {
+          if (allergy=="닭고기" && this.state.chi==true) {
             warn.push("닭고기가 "+food+"에서 검출되었어요!")
           }
-          if (allergy=="쇠고기" && state.cow==true) {
+          if (allergy=="쇠고기" && this.state.cow==true) {
             warn.push("쇠고기가 "+food+"에서 검출되었어요!")
           }
-          if (allergy=="새우" && state.sae==true) {
+          if (allergy=="새우" && this.state.sae==true) {
             warn.push("새우가 "+food+"에서 검출되었어요!")
           }
-          if (allergy=="대두" && state.big==true) {
+          if (allergy=="대두" && this.state.big==true) {
             warn.push("대두가 "+food+"에서 검출되었어요!")
           }
-          if (allergy=="돼지고기" && state.pig==true) {
-            warn.push("돼지고기가 "+food+"에서 검출되었어요!")
+          if (allergy=="돼지고기" && this.state.pig==true) {
+            warn.push("돼지고기 "+food+"에서 검출되었어요!")
           }
-          if (allergy=="복숭아" && state.peach==true) {
+          if (allergy=="복숭아" && this.state.peach==true) {
             warn.push("복숭아가 "+food+"에서 검출되었어요!")
           }
-          if (allergy=="토마토" && state.tomato==true) {
+          if (allergy=="토마토" && this.state.tomato==true) {
             warn.push("토마토가 "+food+"에서 검출되었어요!")
           }
-          if (allergy=="게" && state.gae==true) {
+          if (allergy=="게" && this.state.gae==true) {
             warn.push("게가 "+food+"에서 검출되었어요!")
           }
-          if (allergy=="고등어" && state.high==true) {
+          if (allergy=="고등어" && this.state.high==true) {
             warn.push("고등어가 "+food+"에서 검출되었어요!")
           }
-          if (allergy=="조개류" && state.jo==true) {
+          if (allergy=="조개류" && this.state.jo==true) {
             warn.push("조개류 "+food+"에서 검출되었어요!")
           }
-          if (allergy=="오징어" && state.squid==true) {
+          if (allergy=="오징어" && this.state.squid==true) {
             warn.push("오징어가 "+food+"에서 검출되었어요!")
           }
-          if (allergy=="잣" && state.jat==true) {
+          if (allergy=="잣" && this.state.jat==true) {
             warn.push("잣이 "+food+"에서 검출되었어요!")
           }
-          if (allergy=="아황산" && state.wine==true) {
+          if (allergy=="아황산" && this.state.wine==true) {
             warn.push("아황산류가 "+food+"에서 검출되었어요!")
           }
-          if (allergy=="호두" && state.brainnut==true) {
+          if (allergy=="호두" && this.state.brainnut==true) {
             warn.push("호두가 "+food+"에서 검출되었어요!")
           }
-          if (allergy=="메밀" && state.memil==true) {
+          if (allergy=="메밀" && this.state.memil==true) {
             warn.push("메밀이 "+food+"에서 검출되었어요!")
           }
-          if (allergy=="땅콩" && state.nut==true) {
+          if (allergy=="땅콩" && this.state.nut==true) {
             warn.push("땅콩이 "+food+"에서 검출되었어요!")
           }
         }
       }
-      setFoodListNum(temp);
       warn.sort();
-      if (warn2!='') {
-        Alert.alert(warn2,"식품 구매에 주의를 요합니다.")
-      }
-      if(warn.length==0) {
-        Alert.alert("8가지 알레르기가 검출되지 않았습니다! :)");
-      }
-      else {
-        Alert.alert("알레르기 검출!",warn.join("\n\n"));
-      }
+      Alert.alert("알레르기 검출!",warn.join("\n"));
       Vibration.vibrate(400);
+  } catch (ex) {
+      this.setState({
+          log: ex.toString()
+      })
       NfcManager.cancelTechnologyRequest().catch(() => 0);
+  }
 }
-
+  render() {
     return (
-      <LinearGradient colors={['#FFAC9B', '#FFC7BF', '#FFD4CE']} style={styles.container}>
-          <TouchableOpacity style={styles.button}
-                 onPress={() => {
-                  nfcRead(); //"칸타타프리미엄라떼&우유/"
-                }}>
-                  <Text style={styles.text}>NFC</Text>
-          </TouchableOpacity>
+      <LinearGradient colors={['#FFA296', '#FFC7BF', '#FFD4CE']} style={styles.container}>
           <View style={styles.border}>
+            <Button
+              title="NFC"
+              color="#FF6666"
+              onPress={() => {
+                this.nfcRead(); //"칸타타프리미엄라떼&우유/"
+            }}
+            />
             <ScrollView style={styles.scrollw}>
               <BouncyCheckbox
                 size={35}
@@ -257,11 +157,11 @@ function HomeScreen( {navigation} )  {
                   fontSize: 22
                 }}
                 onPress={() => {
-                  state.egg = state.egg ? false : true;
-                  console.log(state);
+                  this.state.egg = this.state.egg ? false : true;
+                  console.log(this.state);
                 }
                 }
-                isChecked = {state.egg}
+                isChecked = {this.state.egg}
               />
               <BouncyCheckbox
                 size={35}
@@ -274,10 +174,10 @@ function HomeScreen( {navigation} )  {
                   fontSize: 22
                 }}
                 onPress={() => {
-                  state.cow = state.cow ? false : true;
+                  this.state.cow = this.state.cow ? false : true;
                 }
                 }
-                isChecked = {state.cow}
+                isChecked = {this.state.cow}
               />
               <BouncyCheckbox
                 size={35}
@@ -290,10 +190,10 @@ function HomeScreen( {navigation} )  {
                   fontSize: 22
                 }}
                 onPress={() => {
-                  state.pig = state.pig ? false : true;
+                  this.state.pig = this.state.pig ? false : true;
                 }
                 }
-                isChecked = {state.pig}
+                isChecked = {this.state.pig}
               />
               <BouncyCheckbox
                 size={35}
@@ -306,10 +206,10 @@ function HomeScreen( {navigation} )  {
                   fontSize: 22
                 }}
                 onPress={() => {
-                  state.chi = state.chi ? false : true;
+                  this.state.chi = this.state.chi ? false : true;
                 }
                 }
-                isChecked = {state.chi}
+                isChecked = {this.state.chi}
               />
               <BouncyCheckbox
                 size={35}
@@ -322,10 +222,10 @@ function HomeScreen( {navigation} )  {
                   fontSize: 22
                 }}
                 onPress={() => {
-                  state.sae = state.sae ? false : true;
+                  this.state.sae = this.state.sae ? false : true;
                 }
                 }
-                isChecked = {state.sae}
+                isChecked = {this.state.sae}
               />
               <BouncyCheckbox
                 size={35}
@@ -338,10 +238,10 @@ function HomeScreen( {navigation} )  {
                   fontSize: 22
                 }}
                 onPress={() => {
-                  state.gae = state.gae ? false : true;
+                  this.state.gae = this.state.gae ? false : true;
                 }
                 }
-                isChecked = {state.gae}
+                isChecked = {this.state.gae}
               />
               <BouncyCheckbox
                 size={35}
@@ -354,10 +254,10 @@ function HomeScreen( {navigation} )  {
                   fontSize: 22
                 }}
                 onPress={() => {
-                  state.squid = state.squid ? false : true;
+                  this.state.squid = this.state.squid ? false : true;
                 }
                 }
-                isChecked = {state.squid}
+                isChecked = {this.state.squid}
               />
               <BouncyCheckbox
                 size={35}
@@ -370,10 +270,10 @@ function HomeScreen( {navigation} )  {
                   fontSize: 22
                 }}
                 onPress={() => {
-                  state.high = state.high ? false : true;
+                  this.state.high = this.state.high ? false : true;
                 }
                 }
-                isChecked = {state.high}
+                isChecked = {this.state.high}
               />
               <BouncyCheckbox
                 size={35}
@@ -386,10 +286,10 @@ function HomeScreen( {navigation} )  {
                   fontSize: 22
                 }}
                 onPress={() => {
-                  state.jo = state.jo ? false : true;
+                  this.state.jo = this.state.jo ? false : true;
                 }
                 }
-                isChecked = {state.jo}
+                isChecked = {this.state.jo}
               />
               <BouncyCheckbox
                 size={35}
@@ -402,10 +302,10 @@ function HomeScreen( {navigation} )  {
                   fontSize: 22
                 }}
                 onPress={() => {
-                  state.milk = state.milk ? false : true;
+                  this.state.milk = this.state.milk ? false : true;
                 }
                 }
-                isChecked = {state.milk}
+                isChecked = {this.state.milk}
               />
               <BouncyCheckbox
                 size={35}
@@ -418,10 +318,10 @@ function HomeScreen( {navigation} )  {
                   fontSize: 22
                 }}
                 onPress={() => {
-                  state.nut = state.nut ? false : true;
+                  this.state.nut = this.state.nut ? false : true;
                 }
                 }
-                isChecked = {state.nut}
+                isChecked = {this.state.nut}
               />
               <BouncyCheckbox
                 size={35}
@@ -434,10 +334,10 @@ function HomeScreen( {navigation} )  {
                   fontSize: 22
                 }}
                 onPress={() => {
-                  state.brainnut = state.brainnut ? false : true;
+                  this.state.brainnut = this.state.brainnut ? false : true;
                 }
                 }
-                isChecked = {state.brainnut}
+                isChecked = {this.state.brainnut}
               />
               <BouncyCheckbox
                 size={35}
@@ -450,10 +350,10 @@ function HomeScreen( {navigation} )  {
                   fontSize: 22
                 }}
                 onPress={() => {
-                  state.jat = state.jat ? false : true;
+                  this.state.jat = this.state.jat ? false : true;
                 }
                 }
-                isChecked = {state.jat}
+                isChecked = {this.state.jat}
               />
               <BouncyCheckbox
                 size={35}
@@ -466,10 +366,10 @@ function HomeScreen( {navigation} )  {
                   fontSize: 22
                 }}
                 onPress={() => {
-                  state.big = state.big ? false : true;
+                  this.state.big = this.state.big ? false : true;
                 }
                 }
-                isChecked = {state.big}
+                isChecked = {this.state.big}
               />
               <BouncyCheckbox
                 size={35}
@@ -482,10 +382,10 @@ function HomeScreen( {navigation} )  {
                   fontSize: 22
                 }}
                 onPress={() => {
-                  state.tomato = state.tomato ? false : true;
+                  this.state.tomato = this.state.tomato ? false : true;
                 }
                 }
-                isChecked = {state.tomato}
+                isChecked = {this.state.tomato}
               />
               <BouncyCheckbox
                 size={35}
@@ -498,10 +398,10 @@ function HomeScreen( {navigation} )  {
                   fontSize: 22
                 }}
                 onPress={() => {
-                  state.peach = state.peach ? false : true;
+                  this.state.peach = this.state.peach ? false : true;
                 }
                 }
-                isChecked = {state.peach}
+                isChecked = {this.state.peach}
               />
               <BouncyCheckbox
                 size={35}
@@ -514,10 +414,10 @@ function HomeScreen( {navigation} )  {
                   fontSize: 22
                 }}
                 onPress={() => {
-                  state.mil = state.mil ? false : true;
+                  this.state.mil = this.state.mil ? false : true;
                 }
                 }
-                isChecked = {state.mil}
+                isChecked = {this.state.mil}
               />
               <BouncyCheckbox
                 size={35}
@@ -530,10 +430,10 @@ function HomeScreen( {navigation} )  {
                   fontSize: 22
                 }}
                 onPress={() => {
-                  state.memil = state.memil ? false : true;
+                  this.state.memil = this.state.memil ? false : true;
                 }
                 }
-                isChecked = {state.memil}
+                isChecked = {this.state.memil}
               />
               <BouncyCheckbox
                 size={35}
@@ -546,139 +446,24 @@ function HomeScreen( {navigation} )  {
                   fontSize: 22
                 }}
                 onPress={() => {
-                  state.wine = state.wine ? false : true;
+                  this.state.wine = this.state.wine ? false : true;
                 }
                 }
-                isChecked = {state.wine}
+                isChecked = {this.state.wine}
               />
             </ScrollView>
             <View style={styles.banner}>
-              <Text style={{fontSize:15, fontWeight:'bold', color:'#FFEFEF'}}>{"\n"}당신의 알레르기 정보를 입력하여 주세요.</Text>
+              <Text style={{fontSize:19, fontWeight:'bold', color:'#FFEFEF'}}>{"\n"}당신의 알레르기 정보를 입력하여 주세요.</Text>
             </View>
-        </View>   
-        <Button 
-            title = '{식품 리스트}'   
-            onPress={() =>
-              navigation.navigate('Details', {foods: foodListNum})
-            }
-          />          
+        </View>        
       </LinearGradient> 
     );
+  };
+  
 }
-function DetailsScreen( {route, navigation} ) {
-  const report = async (food) => {
-    var xhr = new XMLHttpRequest();
-    var url = 'http://apis.data.go.kr/B553748/CertImgListService/getCertImgListService'; /URL/
-    var queryParams = '?' + encodeURIComponent('serviceKey') + '='+'4Es3IAYWvtEjQloH9aZivTA0FhZMzBQbDRsGvzwvSpWjQfBd%2BGkPTUj7TNeAltYbfnkZd%2BMPvvlwmdYPH%2FC%2BXw%3D%3D'; /Service Key/
-    queryParams += '&' + encodeURIComponent('prdlstReportNo') + '=' + encodeURIComponent(food); //
-    queryParams += '&' + encodeURIComponent('returnType') + '=' + encodeURIComponent('xml'); //
-    queryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1'); //
-    queryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('10'); /**/
-    xhr.open('GET', url + queryParams);
-    xhr.onreadystatechange = function () {
-        if (this.readyState == 4) {
-          var rawmtrl = (this.responseText).split("<rawmtrl>")[1].split("</rawmtrl>")[0].trim();
-          rawmtrl = rawmtrl.replace(/\{[^}]*/g, "").replace(/[}]*/g, "").replace(/\([^)]*/g, "").replace(/[)]*/g, "").replace(/[^a-zA-Zㄱ-힣,]/g, "");
-          rawmtrl = rawmtrl.split(",");
-          
-          var rmat = '';
-          rawmtrl.forEach(element => {
-            sheetOne.eachRow((row) => {
-              if (row.getCell('i').value==element) {
-                row.getCell('r').value += 1
-                if (row.getCell('r')/row.getCell('c')>0.90) {
-                  rmat += ',' + element;
-                }
-                //row.getCell('r').value=-100
-              }
-            })
-          });
-          sheetTwo.eachRow((row) => {
-            console.log(row.values)
-            if (row.getCell('u').value=='user') {
-              row.getCell('d').value = rmat
-            }
-          })
-        }
-    };
-    xhr.send('');
-  }
-  function picture(prdnm) {
-    if (prdnm =='19720154001156') {
-      return "https://img.danawa.com/prod_img/500000/951/529/img/1529951_1.jpg?shrink=330:330&_v=20200925092456"
-    }
-    else if (prdnm =='1991046110110') {
-      return "http://image.nongshim.com/non/pro/1519720787073.jpg"
-    }
-    else if (prdnm =='1993044304663') {
-      return "https://image.homeplus.kr/td/e41bc190-f987-4317-9bdd-bb235d50bb6a"
-    }
-    else {
-      return "https://img.danawa.com/prod_img/500000/754/721/img/1721754_1.jpg?shrink=330:330&_v=20220913132343"
-    }
-  }
-  /*report('1991046110110')
-  report('2001054954120')
-  report('19760342001184')
-  report('19760342001184')*/
-  const { foods } = route.params;
-  return (
-    <View style = {styles.ScreenBorder}>
-      <View style = {styles.foodListScreen}>
-        <FlatList 
-          data = {foods}
-          renderItem = {({item}) => {
-              return (
-                <View style = {styles.flextemp}>
-                  <Image
-                        style={{width: '25%', height: '100%', margin:0, marginTop:0, marginRight:0}}
-                        source={{uri:picture(item[1])}}
-                      />
-                  <TouchableOpacity
-                    style = {styles.listOfFood}
-                    onPress={() => {
-                      report(item[1])
-                      Alert.alert("(!) 신고가 완료되었습니다.")
-                    }}
-                  >
-                    <Text style = {styles.food}>{item[0]}</Text>
-                  </TouchableOpacity>
-                </View>
-              )
-          }}
-          keyExtractor = {(item) => item.id}
-        />
-        <Button title = 'Home' onPress = {() => {navigation.navigate('Home')}} />
-      </View>
-    </View>
-      
-  );
-}
-const Screen = createStackNavigator();
 
-const App = () => {
-  return (
-    <NavigationContainer>
-      <Screen.Navigator>
-        <Screen.Screen 
-          name="Home" 
-          component={HomeScreen} 
-          options = {{
-            title : 'Home',
-          }}
-        />
-        <Screen.Screen 
-          name="Details" 
-          component={DetailsScreen}
-          options = {{
-            title : 'Food List'
-          }}
-        />
-      </Screen.Navigator>
-    </NavigationContainer>
-  );
 
-}
+
 
 const styles = StyleSheet.create({
   container: {
@@ -714,59 +499,4 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginBottom: 10
   },
-  button : {
-    backgroundColor: "#FF6666",
-    borderRadius: 10,
-    margin: 10,
-    marginBottom: 5,
-    height: 40,
-    shadowColor: 'rgba(0, 0, 0, 0.1)',
-    shadowOpacity: 0.8,
-    elevation: 12,
-    shadowRadius: 15 ,
-    shadowOffset : { width: 1, height: 13},
-  },
-  text : {
-    textAlign: 'center',
-    fontSize: 24,
-    color: "white",
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  ScreenBorder : {
-    flex:1,
-    backgroundColor : '#FFDAAF',
-  },
-  listOfFood : {
-    margin:10,
-    marginLeft:5,
-    paddingLeft:5,
-    paddingBottom : 20,
-    paddingTop:30,
-    paddingRight:5,
-    //borderBottomWidth : 3,
-    //borderBottomColor: "#FF653A",
-    //backgroundColor : '#FFF2E5',
-  },
-  food : {
-    fontSize : 20,
-  },
-  foodListScreen : {
-    margin:5,
-    padding:10,
-    backgroundColor : '#F2F2F2',
-    borderRadius: 20,
-    flex : 1,
-  },
-  flextemp : {
-    marginTop : 5,
-    marginRight : 10,
-    marginLeft : 0,
-    paddingRight:5,
-    flexDirection: 'row',
-    backgroundColor : '#FFFFFF',
-  }
-
 });
-
-export default App;
